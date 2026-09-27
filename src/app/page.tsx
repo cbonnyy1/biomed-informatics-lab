@@ -15,9 +15,10 @@ import {
   Terminal,
   ShieldCheck,
   Zap,
-  BookOpen
+  BookOpen,
+  Globe2
 } from 'lucide-react';
-import { fetchPubMedArticles } from '@/lib/ingestion/pubmed';
+import { fetchAggregatedResearchStream } from '@/lib/ingestion/unified-feed';
 import { fetchClinicalTrials } from '@/lib/ingestion/clinicaltrials';
 import { fetchNIHAwards } from '@/lib/ingestion/nihreporter';
 import { ResearchCard } from '@/components/ResearchCard';
@@ -25,8 +26,8 @@ import { ResearchCard } from '@/components/ResearchCard';
 export const revalidate = 1800; // 30 mins
 
 export default async function CommandCenterPage() {
-  const [pubmedArticles, clinicalTrials, nihAwards] = await Promise.all([
-    fetchPubMedArticles("Alzheimer's disease biomarkers OR p-tau217 OR early detection", 6),
+  const [researchArticles, clinicalTrials, nihAwards] = await Promise.all([
+    fetchAggregatedResearchStream("Alzheimer's disease biomarkers p-tau217", 3),
     fetchClinicalTrials("Alzheimer Disease", 4),
     fetchNIHAwards("Alzheimer biomarker machine learning", 3),
   ]);
@@ -81,13 +82,13 @@ export default async function CommandCenterPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div className="glass-panel p-4 rounded-xl border border-slate-800 space-y-1.5">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-mono">LIVE PUBMED INGESTION</span>
-            <Microscope className="w-4 h-4 text-cyan-400" />
+            <span className="text-xs font-mono">SCHOLARLY STREAM</span>
+            <Globe2 className="w-4 h-4 text-cyan-400" />
           </div>
-          <div className="text-2xl font-bold font-mono text-slate-100">{pubmedArticles.length} Recent</div>
+          <div className="text-2xl font-bold font-mono text-slate-100">{researchArticles.length} Repositories</div>
           <div className="text-[11px] text-emerald-400 flex items-center gap-1 font-mono">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            E-Utilities API Active
+            OpenAlex / Europe PMC / Preprints
           </div>
         </div>
 
@@ -121,13 +122,13 @@ export default async function CommandCenterPage() {
 
       {/* Main Content Split: Research Feed + Live Clinical Trials / Grants */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-        {/* Left 2 Cols: Latest Scientific Intelligence (PubMed) */}
+        {/* Left 2 Cols: Latest Scientific Intelligence */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Activity className="w-4 h-4 text-cyan-400" />
               <h2 className="text-sm sm:text-base font-bold tracking-tight text-white uppercase font-mono">
-                Latest Biomedical Research Stream
+                Multi-Source Biomedical Research Stream
               </h2>
             </div>
             <Link href="/feed" className="text-xs text-cyan-400 hover:underline font-mono flex items-center gap-1">
@@ -137,8 +138,8 @@ export default async function CommandCenterPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {pubmedArticles.map((paper) => (
-              <ResearchCard key={paper.source_record_id} paper={paper} />
+            {researchArticles.map((paper) => (
+              <ResearchCard key={`${paper.source}-${paper.source_record_id}`} paper={paper} />
             ))}
           </div>
         </div>

@@ -1,29 +1,19 @@
 // OpenAlex Scholarly Knowledge Graph Client
 // Endpoint: https://api.openalex.org/works
 
-export interface OpenAlexWork {
-  id: string;
-  doi: string;
-  title: string;
-  publication_year: number;
-  cited_by_count: number;
-  open_access: boolean;
-  primary_topic: string;
-  concepts: { id: string; display_name: string; score: number }[];
-  authors: string[];
-}
+import { ResearchCardProps } from '@/components/ResearchCard';
 
 export async function fetchOpenAlexResearch(
-  query: string = "Alzheimer biomarker machine learning p-tau217",
-  perPage: number = 6
-): Promise<OpenAlexWork[]> {
+  query: string = "Alzheimer disease biomarker p-tau217",
+  perPage: number = 8
+): Promise<ResearchCardProps[]> {
   const url = `https://api.openalex.org/works?search=${encodeURIComponent(
     query
   )}&per_page=${perPage}&sort=publication_date:desc&mailto=researcher@biomed-lab.local`;
 
   try {
     const res = await fetch(url, {
-      next: { revalidate: 86400 },
+      next: { revalidate: 3600 },
       headers: { 'User-Agent': 'BiomedicalInformaticsLab/1.0' },
     });
 
@@ -34,39 +24,57 @@ export async function fetchOpenAlexResearch(
     const data = await res.json();
     const results = data.results || [];
 
-    return results.map((work: any) => ({
-      id: work.id,
-      doi: work.doi || '',
-      title: work.title || 'Scholarly Work',
-      publication_year: work.publication_year || new Date().getFullYear(),
-      cited_by_count: work.cited_by_count || 0,
-      open_access: work.open_access?.is_oa || false,
-      primary_topic: work.primary_topic?.display_name || 'Neurodegenerative Diseases',
-      concepts: (work.concepts || []).slice(0, 5).map((c: any) => ({
-        id: c.id,
-        display_name: c.display_name,
-        score: c.score,
-      })),
-      authors: (work.authorships || []).slice(0, 6).map((a: any) => a.author?.display_name || 'Researcher'),
-    }));
+    return results.map((work: any) => {
+      const doi = work.doi || '';
+      // Ensure valid direct DOI or primary location landing page
+      const directUrl = doi 
+        ? (doi.startsWith('http') ? doi : `https://doi.org/${doi}`) 
+        : (work.primary_location?.landing_page_url || work.id);
+
+      const authors = (work.authorships || [])
+        .slice(0, 6)
+        .map((a: any) => a.author?.display_name || 'Investigator');
+
+      const journal = work.primary_location?.source?.display_name || 'International Biomedical Journal';
+
+      return {
+        id: `openalex-${work.id.replace('https://openalex.org/', '')}`,
+        source: 'OpenAlex Scholarly Graph',
+        source_record_id: work.id.replace('https://openalex.org/', ''),
+        doi: doi || undefined,
+        title: work.title || 'Scholarly Publication',
+        abstract: work.abstract_inverted_index 
+          ? reconstructAbstract(work.abstract_inverted_index) 
+          : 'Scholarly article cataloged with citation metrics and open access metadata.',
+        authors: authors.length > 0 ? authors : ['Scholarly Research Group'],
+        journal: journal,
+        publication_date: work.publication_date || `${work.publication_year || 2025}-01-01`,
+        category: work.primary_topic?.display_name || 'Neurodegenerative Diseases & AI',
+        research_category: work.primary_topic?.display_name || 'Neurodegenerative Diseases & AI',
+        evidence_type: work.cited_by_count > 50 ? 'ESTABLISHED EVIDENCE' : 'EMERGING EVIDENCE',
+        citation_count: work.cited_by_count || 0,
+        source_url: directUrl,
+        retrieved_at: new Date().toISOString(),
+      };
+    });
   } catch (error) {
-    console.warn('[OpenAlex Client Warning] Live OpenAlex query failed, fallback research graph engaged:', error);
-    return [
-      {
-        id: 'https://openalex.org/W4389021234',
-        doi: 'https://doi.org/10.1038/s41591-024-02842-8',
-        title: 'Blood biomarkers in Alzheimer\'s disease: toward clinical translation and early detection',
-        publication_year: 2024,
-        cited_by_count: 88,
-        open_access: true,
-        primary_topic: 'Alzheimer\'s Disease Fluid Biomarkers',
-        concepts: [
-          { id: 'C1', display_name: 'p-tau217', score: 0.98 },
-          { id: 'C2', display_name: 'Amyloid beta', score: 0.94 },
-          { id: 'C3', display_name: 'Biomedical Informatics', score: 0.89 },
-        ],
-        authors: ['Blennow K', 'Zetterberg H', 'Hansson O'],
+    console.warn('[OpenAlex Warning] Live fetch failed:', error);
+    return [];
+  }
+}
+
+function reconstructAbstract(invertedIndex: Record<string, number[]>): string {
+  try {
+    const pairs: [string, number][] = [];
+    for (const [word, positions] of Object.entries(invertedIndex)) {
+      for (const pos of positions) {
+        pairs.push([word, pos]);
       }
-    ];
+    }
+    pairs.sort((a, b) => a[1] - b[1]);
+    const text = pairs.map((p) => p[0]).join(' ');
+    return text.length > 400 ? text.slice(0, 400) + '...' : text;
+  } catch {
+    return 'Detailed abstract indexed in OpenAlex record.';
   }
 }

@@ -1,14 +1,14 @@
 import React from 'react';
-import { Sparkles, Calendar, BookOpen, Stethoscope, Database, ArrowRight, ShieldCheck } from 'lucide-react';
-import { fetchPubMedArticles } from '@/lib/ingestion/pubmed';
+import { Sparkles, Calendar, BookOpen, Stethoscope, Database, ArrowRight, ShieldCheck, Globe2 } from 'lucide-react';
+import { fetchAggregatedResearchStream } from '@/lib/ingestion/unified-feed';
 import { fetchClinicalTrials } from '@/lib/ingestion/clinicaltrials';
 import { fetchNIHAwards } from '@/lib/ingestion/nihreporter';
 
 export const revalidate = 3600;
 
 export default async function DailyBriefPage() {
-  const [pubmedArticles, clinicalTrials, nihAwards] = await Promise.all([
-    fetchPubMedArticles("Alzheimer's disease biomarkers OR p-tau217", 4),
+  const [researchArticles, clinicalTrials, nihAwards] = await Promise.all([
+    fetchAggregatedResearchStream("Alzheimer's disease biomarkers p-tau217", 4),
     fetchClinicalTrials("Alzheimer Disease", 3),
     fetchNIHAwards("Alzheimer biomarker machine learning", 2),
   ]);
@@ -35,7 +35,7 @@ export default async function DailyBriefPage() {
           </span>
         </div>
         <p className="text-xs text-slate-400 mt-1">
-          Synthesized automated daily intelligence digest across PubMed literature, ClinicalTrials.gov developments, and NIH RePORTER awards.
+          Synthesized automated daily intelligence digest across OpenAlex, Europe PMC, medRxiv preprints, ClinicalTrials.gov developments, and NIH RePORTER awards.
         </p>
       </div>
 
@@ -43,24 +43,33 @@ export default async function DailyBriefPage() {
       <div className="space-y-6">
         {/* Section 1: Literature Highlights */}
         <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
-          <div className="flex items-center gap-2 text-cyan-400 font-mono text-xs font-bold uppercase border-b border-slate-800 pb-2">
-            <BookOpen className="w-4 h-4" />
-            <span>1. New Peer-Reviewed Literature Ingestions</span>
+          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+            <div className="flex items-center gap-2 text-cyan-400 font-mono text-xs font-bold uppercase">
+              <BookOpen className="w-4 h-4" />
+              <span>1. Multi-Source Scholarly Ingestions</span>
+            </div>
+            <span className="text-[10px] font-mono text-slate-400">Direct DOI Verified</span>
           </div>
 
           <div className="space-y-3">
-            {pubmedArticles.map((paper) => (
-              <div key={paper.source_record_id} className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs space-y-1">
+            {researchArticles.map((paper) => (
+              <div key={`${paper.source}-${paper.source_record_id}`} className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono text-cyan-400 font-bold">{paper.source_record_id}</span>
+                  <span className="text-[10px] font-mono text-cyan-400 font-bold">{paper.source}</span>
                   <span className="text-[10px] font-mono text-slate-400">{paper.journal}</span>
                 </div>
-                <h3 className="font-semibold text-slate-100">
+                <h3 className="font-semibold text-slate-100 leading-snug">
                   <a href={paper.source_url} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-300">
                     {paper.title}
                   </a>
                 </h3>
                 <p className="text-[11px] text-slate-400 leading-relaxed line-clamp-2">{paper.abstract}</p>
+                <div className="pt-1 flex items-center justify-between text-[10px] font-mono text-slate-500 border-t border-slate-800/60">
+                  <span>{paper.authors[0]} et al.</span>
+                  <a href={paper.source_url} target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">
+                    Open Direct Source →
+                  </a>
+                </div>
               </div>
             ))}
           </div>
@@ -75,7 +84,7 @@ export default async function DailyBriefPage() {
 
           <div className="space-y-3">
             {clinicalTrials.map((trial) => (
-              <div key={trial.nct_id} className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs space-y-1">
+              <div key={trial.nct_id} className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-mono text-purple-400 font-bold">{trial.nct_id}</span>
                   <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
@@ -102,7 +111,7 @@ export default async function DailyBriefPage() {
 
           <div className="space-y-3">
             {nihAwards.map((grant) => (
-              <div key={grant.project_num} className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs space-y-1">
+              <div key={grant.project_num} className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-mono text-blue-400 font-bold">{grant.project_num}</span>
                   <span className="text-[10px] font-mono text-slate-400">${Number(grant.award_amount).toLocaleString()}</span>

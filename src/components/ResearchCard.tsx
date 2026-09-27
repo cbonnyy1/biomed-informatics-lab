@@ -31,6 +31,7 @@ export interface ResearchCardProps {
   nct_id?: string;
   source_url: string;
   citation_count?: number;
+  retrieved_at?: string;
 }
 
 export function ResearchCard({ paper }: { paper: ResearchCardProps }) {

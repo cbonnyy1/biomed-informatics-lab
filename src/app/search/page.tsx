@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Search, Radio, Stethoscope, Dna, Microscope, Database, ArrowRight } from 'lucide-react';
+import { Search, Radio, Stethoscope, Dna, Microscope, Database, ArrowRight, Globe2 } from 'lucide-react';
 import { ResearchCard, ResearchCardProps } from '@/components/ResearchCard';
 import { BIOMARKERS_SEED, GENES_SEED } from '@/lib/data/reference-data';
 
@@ -47,11 +47,11 @@ function SearchInner() {
         <div className="flex items-center gap-2">
           <Search className="w-5 h-5 text-cyan-400" />
           <h1 className="text-xl font-bold tracking-tight text-white uppercase font-mono">
-            Unified Biomedical Search
+            Unified Multi-Source Biomedical Search
           </h1>
         </div>
         <p className="text-xs text-slate-400 mt-1">
-          Simultaneous querying across PubMed literature, biomarkers, genes, clinical trials, and research databases.
+          Simultaneous querying across OpenAlex, Europe PMC, medRxiv preprints, PubMed, biomarkers, and genomic loci with direct DOI verification.
         </p>
       </div>
 
@@ -67,7 +67,7 @@ function SearchInner() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by topic, biomarker, gene, or PMID (e.g. p-tau217, APOE, MRI atrophy)..."
+          placeholder="Search by topic, biomarker, gene, or keyword (e.g. p-tau217, APOE, MRI atrophy)..."
           className="flex-1 bg-slate-900 text-slate-200 text-xs px-4 py-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-cyan-500 font-sans"
         />
         <button
@@ -108,12 +108,12 @@ function SearchInner() {
       {/* Search Results Grid */}
       <div className="space-y-3">
         <h2 className="text-xs font-mono uppercase text-slate-400 font-bold">
-          PubMed Research Ingestions ({papers.length})
+          Multi-Source Scientific Ingestions ({papers.length})
         </h2>
 
         {loading ? (
           <div className="p-8 text-center text-slate-500 font-mono text-xs animate-pulse">
-            Querying NCBI E-Utilities knowledge graphs...
+            Querying OpenAlex, Europe PMC, medRxiv, and PubMed knowledge graphs...
           </div>
         ) : papers.length === 0 ? (
           <div className="p-8 text-center text-slate-500 font-mono text-xs">
@@ -122,7 +122,7 @@ function SearchInner() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {papers.map((paper) => (
-              <ResearchCard key={paper.source_record_id} paper={paper} />
+              <ResearchCard key={`${paper.source}-${paper.source_record_id}`} paper={paper} />
             ))}
           </div>
         )}
