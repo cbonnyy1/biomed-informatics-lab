@@ -1,0 +1,40 @@
+{
+  "name": "biomed-informatics-lab",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Biomedical Informatics Research Lab - Alzheimer's Disease, Neurodegeneration, Data Science & AI",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "lint": "next lint",
+    "db:migrate": "node database/migrate.js",
+    "db:seed": "node database/seed.js",
+    "ingest": "node scripts/run-ingest.js"
+  },
+  "dependencies": {
+    "next": "14.2.35",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "pg": "8.12.0",
+    "clsx": "2.1.1",
+    "tailwind-merge": "2.4.0",
+    "lucide-react": "0.395.0",
+    "recharts": "2.12.7",
+    "date-fns": "3.6.0",
+    "zod": "3.23.8",
+    "framer-motion": "11.3.2"
+  },
+  "devDependencies": {
+    "typescript": "5.5.3",
+    "@types/node": "20.14.10",
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
+    "@types/pg": "8.11.6",
+    "autoprefixer": "10.4.19",
+    "postcss": "8.4.39",
+    "tailwindcss": "3.4.6",
+    "eslint": "8.57.0",
+    "eslint-config-next": "14.2.35"
+  }
+}
