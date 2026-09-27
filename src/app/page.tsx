@@ -32,9 +32,9 @@ export default async function CommandCenterPage() {
   ]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Hero Mission Statement */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#0d1527] via-[#0b101c] to-[#07090e] border border-cyan-500/20 p-8">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#0d1527] via-[#0b101c] to-[#07090e] border border-cyan-500/20 p-5 sm:p-8">
         <div className="absolute right-0 top-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 max-w-4xl space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono">
@@ -42,18 +42,18 @@ export default async function CommandCenterPage() {
             <span>BIOMEDICAL INFORMATICS RESEARCH ENVIRONMENT</span>
           </div>
 
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-white leading-tight">
             Alzheimer's Disease, Neurodegeneration & Computational Early-Detection Lab
           </h1>
 
-          <p className="text-sm text-slate-300 leading-relaxed max-w-3xl">
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-3xl">
             A permanent pre-doctoral scientific platform engineered for computational research into Alzheimer's Disease and Related Dementias (ADRD). Dedicated to mastering multimodal biomarkers, genomics, neuroimaging, biostatistics, and machine learning toward early disease identification.
           </p>
 
-          <div className="flex items-center gap-3 pt-2 flex-wrap text-xs">
+          <div className="flex items-center gap-2 sm:gap-3 pt-2 flex-wrap text-xs">
             <Link
               href="/early-detection"
-              className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-semibold flex items-center gap-2 shadow-lg shadow-cyan-500/20 transition-all font-mono"
+              className="w-full sm:w-auto justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-semibold flex items-center gap-2 shadow-lg shadow-cyan-500/20 transition-all font-mono"
             >
               <Zap className="w-4 h-4" />
               <span>EARLY DETECTION PROGRAM</span>
@@ -61,14 +61,14 @@ export default async function CommandCenterPage() {
             </Link>
             <Link
               href="/academy"
-              className="px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 hover:border-slate-600 text-slate-200 font-medium flex items-center gap-2 font-mono transition-all"
+              className="w-full sm:w-auto justify-center px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 hover:border-slate-600 text-slate-200 font-medium flex items-center gap-2 font-mono transition-all"
             >
               <FileCode2 className="w-4 h-4 text-cyan-400" />
               <span>TRAINING ACADEMY (13 LEVELS)</span>
             </Link>
             <Link
               href="/brief"
-              className="px-4 py-2 rounded-lg bg-slate-900/60 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200 font-mono flex items-center gap-1.5"
+              className="w-full sm:w-auto justify-center px-4 py-2 rounded-lg bg-slate-900/60 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200 font-mono flex items-center gap-1.5"
             >
               <Sparkles className="w-3.5 h-3.5 text-purple-400" />
               <span>DAILY BRIEF</span>
@@ -78,7 +78,7 @@ export default async function CommandCenterPage() {
       </div>
 
       {/* Real-time KPI / Research Stream Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div className="glass-panel p-4 rounded-xl border border-slate-800 space-y-1.5">
           <div className="flex items-center justify-between text-slate-400">
             <span className="text-xs font-mono">LIVE PUBMED INGESTION</span>
@@ -120,18 +120,18 @@ export default async function CommandCenterPage() {
       </div>
 
       {/* Main Content Split: Research Feed + Live Clinical Trials / Grants */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
         {/* Left 2 Cols: Latest Scientific Intelligence (PubMed) */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Activity className="w-4 h-4 text-cyan-400" />
-              <h2 className="text-base font-bold tracking-tight text-white uppercase font-mono">
+              <h2 className="text-sm sm:text-base font-bold tracking-tight text-white uppercase font-mono">
                 Latest Biomedical Research Stream
               </h2>
             </div>
             <Link href="/feed" className="text-xs text-cyan-400 hover:underline font-mono flex items-center gap-1">
-              <span>View Full Research Feed</span>
+              <span>Full Feed</span>
               <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
